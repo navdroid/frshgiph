@@ -9,9 +9,6 @@ import android.view.ViewGroup
 import com.navdroid.frshgiph.R
 
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class TrendingFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
