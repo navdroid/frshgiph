@@ -1,20 +1,12 @@
 package com.navdroid.frshgiph.di
 
+import com.navdroid.frshgiph.repos.GiphyRepo
+import com.navdroid.frshgiph.viewmodel.MainViewModelFactory
 import dagger.Module
+import dagger.Provides
 
 
 @Module(includes = [NetworkModule::class, RepositoryModule::class])
 class ApplicationModule {
-
-//    @Provides
-//    @ApplicationContext
-//    internal fun provideContext(): Context {
-//        return mApplication
-//    }
-//
-//    @Provides
-//    internal fun provideApplication(): Application {
-//        return mApplication
-//    }
 
 }

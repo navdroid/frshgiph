@@ -6,6 +6,7 @@ import com.navdroid.frshgiph.di.ApplicationComponent
 import com.navdroid.frshgiph.di.ApplicationModule
 import com.navdroid.frshgiph.di.DaggerApplicationComponent
 import com.navdroid.frshgiph.network.ApiEndPoints
+import com.orm.SugarContext
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -21,9 +22,17 @@ class MainApplication : Application(), HasActivityInjector {
 
     override fun onCreate() {
         super.onCreate()
+        SugarContext.init(this)
         DaggerApplicationComponent.
                 builder().create(this).inject(this)
 
 
     }
+
+    override fun onTerminate() {
+        SugarContext.terminate()
+        super.onTerminate()
+    }
+
+
 }

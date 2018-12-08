@@ -1,40 +1,65 @@
 package com.navdroid.frshgiph.model
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.orm.SugarRecord
+import com.orm.dsl.Unique
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class GiphyResponse(
-        @SerializedName("data") var data: List<Data?>?,
-        @SerializedName("pagination") var pagination: Pagination?,
-        @SerializedName("meta") var meta: Meta?
+        @JsonProperty("data") var data: ArrayList<Data>,
+        @JsonProperty("pagination") var pagination: Pagination?,
+        @JsonProperty("meta") var meta: Meta?
 )
 
-data class Data(
-        @SerializedName("id") var id: String?,
-        @SerializedName("images") var images: Images?
-)
+@JsonIgnoreProperties(ignoreUnknown = true)
+class Data() : SugarRecord() {
 
+    var uid: String? = null
+
+    var imageUrl: String? = null
+
+    @JsonProperty("images")
+    fun parse(images: Images?) {
+        imageUrl = images?.original?.url
+    }
+
+    @JsonProperty("id")
+    fun parse(id: String?) {
+        this.uid = id
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return when {
+            this === other -> true
+            other?.javaClass != javaClass -> false
+            (other is Data) && id == other.id -> true
+            else -> false
+        }
+    }
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Images(
-        @SerializedName("original") var original: Original?
+        @JsonProperty("fixed_height_small") var original: Original?
 )
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Original(
-        @SerializedName("url") var url: String?,
-        @SerializedName("width") var width: String?,
-        @SerializedName("height") var height: String?,
-        @SerializedName("size") var size: String?,
-        @SerializedName("frames") var frames: String?
+        @JsonProperty("url") var url: String?,
+        @JsonProperty("width") var width: String?,
+        @JsonProperty("height") var height: String?,
+        @JsonProperty("size") var size: String?
 )
 
 data class Meta(
-        @SerializedName("status") var status: Int?,
-        @SerializedName("msg") var msg: String?,
-        @SerializedName("response_id") var responseId: String?
+        @JsonProperty("status") var status: Int?,
+        @JsonProperty("msg") var msg: String?,
+        @JsonProperty("response_id") var responseId: String?
 )
 
 data class Pagination(
-        @SerializedName("total_count") var totalCount: Int?,
-        @SerializedName("count") var count: Int?,
-        @SerializedName("offset") var offset: Int?
+        @JsonProperty("total_count") var totalCount: Int = 0,
+        @JsonProperty("count") var count: Int?,
+        @JsonProperty("offset") var offset: Int?
 )

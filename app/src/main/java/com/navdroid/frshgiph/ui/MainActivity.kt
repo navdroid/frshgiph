@@ -22,15 +22,23 @@ import com.navdroid.frshgiph.repos.GiphyRepo
 import com.navdroid.frshgiph.viewmodel.MainViewModel
 import com.navdroid.frshgiph.viewmodel.MainViewModelFactory
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasFragmentInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
+class MainActivity : AppCompatActivity(), ViewPager.OnPageChangeListener, HasSupportFragmentInjector {
 
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+
     lateinit var viewModel: MainViewModel
 
     override fun onPageScrollStateChanged(p0: Int) {
@@ -40,6 +48,10 @@ class MainActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
     }
 
     override fun onPageSelected(p0: Int) {
+    }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
+        return dispatchingAndroidInjector
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,32 +71,6 @@ class MainActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
 
     private fun setUpViewModel() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
-
-        viewModel.getTrend().observe(this, Observer {
-           when(it)
-           {
-               is ApiIsLoading -> {
-                   Log.d("TAG","LOADING")
-                   null
-               }
-               is ApiSuccessResponse -> {
-                   val responseBody = it.body
-                   Log.d("TAG",it.body.toString())
-
-               }
-               is ApiEmptyResponse<*> -> {
-                   Log.d("TAG","EMPTY")
-
-                   null
-               }
-               is ApiErrorResponse<*> -> {
-                   Log.d("TAG","EROORe")
-
-                   null
-               }
-               else -> null
-           }
-        })
     }
 
     class PagerAdapter(val context: Context, fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
