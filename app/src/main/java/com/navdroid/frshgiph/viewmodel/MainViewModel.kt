@@ -1,33 +1,24 @@
 package com.navdroid.frshgiph.viewmodel
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
-import android.support.v7.widget.GridLayoutManager
-import android.util.Log
-import android.view.View
-import com.navdroid.frshgiph.MainApplication
-import com.navdroid.frshgiph.model.ApiResponse
 import com.navdroid.frshgiph.model.Data
 import com.navdroid.frshgiph.model.GiphyResponse
-import com.navdroid.frshgiph.model.Pagination
+import com.navdroid.frshgiph.network.NetworkObserver
 import com.navdroid.frshgiph.repos.GiphyRepo
-import com.orm.SugarDb
-import com.orm.SugarRecord
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(var giphyRepo: GiphyRepo) : ViewModel() {
 
     private var mQuery: String = ""
     private var mOffset: Int = 0
+    private var mTotalCount = -1
+    private var mDisposables = CompositeDisposable()
     var mGifs = MutableLiveData<ArrayList<Data>>()
     var mFavGifs = MutableLiveData<ArrayList<Data>>()
-    private var totalCount = -1
 
     fun getGifs(query: String = "", isNext: Boolean = false) {
         when {
@@ -38,40 +29,52 @@ class MainViewModel @Inject constructor(var giphyRepo: GiphyRepo) : ViewModel() 
                 mQuery = query
             }
         }
-        if (totalCount > mOffset || mOffset == 0) {
+        if (mTotalCount > mOffset || mOffset == 0) {
             giphyRepo.searchGif(query, mOffset)
-                    .enqueue(object : Callback<GiphyResponse> {
-                        override fun onFailure(call: Call<GiphyResponse>, t: Throwable) {
-                            t.printStackTrace()
-                        }
-
-                        override fun onResponse(call: Call<GiphyResponse>, response: Response<GiphyResponse>) {
-                            if (response.body()?.meta?.status == 200) {
-                                mGifs.value = response.body()?.data
-                                totalCount = response.body()?.pagination?.totalCount ?: -1
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(object : NetworkObserver<GiphyResponse>() {
+                        override fun onPass(response: GiphyResponse) {
+                            if (response.meta?.status == 200) {
+                                mGifs.value = response.data
+                                mTotalCount = response.pagination?.totalCount ?: -1
                             }
                         }
-
+                        override fun onFail(e: Throwable) {
+                        }
                     })
         }
     }
 
     fun getFavGifs() {
-        mFavGifs.value = SugarRecord.listAll(Data::class.java) as ArrayList<Data>
+        mDisposables.add(giphyRepo.getFavorite()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                            mFavGifs.value = it as ArrayList<Data> ?: arrayListOf()
+                })
     }
 
     fun updateFavGif(gif: Data) {
-        val saveGif = SugarRecord.find(Data::class.java, "uid = ?", gif.uid)
+        mDisposables.add(giphyRepo.getById(gif.uid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    if (it != null && it.isNotEmpty()) {
+                        it[0].let {
+                            it.isFavorite = !it.isFavorite
+                            giphyRepo.update(it.uid, it.isFavorite)
+                            mGifs.update(it)
+                        }
+                    }
+                })
+    }
 
-        if (saveGif != null && saveGif.isNotEmpty()) {
-            saveGif[0].delete()
-            mFavGifs.remove(saveGif[0])
-        } else {
-            gif.save()
-            mFavGifs.add(gif)
-        }
-
-
+    fun MutableLiveData<ArrayList<Data>>.update(value: Data) {
+        val list = this.value ?: arrayListOf()
+        if (list.contains(value))
+            list[list.indexOf(value)] = value
+        this.postValue(list)
     }
 
 
@@ -85,6 +88,13 @@ class MainViewModel @Inject constructor(var giphyRepo: GiphyRepo) : ViewModel() 
         val value = this.value ?: arrayListOf()
         value.remove(gif)
         this.value = value
+    }
+
+    override fun onCleared() {
+        mDisposables.clear()
+        giphyRepo.clear()
+        super.onCleared()
+
     }
 
 }

@@ -24,7 +24,6 @@ class FavouriteFragment : Fragment(), GifAdapter.ItemClickListener {
 
 
     lateinit var viewModel: MainViewModel
-    private var isNext: Boolean = false
     private var isloading: Boolean = false
     private lateinit var mAdapter: GifAdapter
     private lateinit var mLayoutManager: GridLayoutManager
@@ -46,12 +45,10 @@ class FavouriteFragment : Fragment(), GifAdapter.ItemClickListener {
         isloading = true
         viewModel.getFavGifs()
         viewModel.mFavGifs.observe(this, Observer {
-            Log.d("TAG", it.toString())
             isloading = false
             mAdapter.addAll(it!!, true)
         })
     }
-
 
     private fun initList() {
         mLayoutManager = GridLayoutManager(activity, 2)
@@ -67,6 +64,4 @@ class FavouriteFragment : Fragment(), GifAdapter.ItemClickListener {
     override fun itemClicked(gif: Data) {
         viewModel.updateFavGif(gif)
     }
-
-
 }

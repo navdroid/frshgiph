@@ -1,9 +1,9 @@
 package com.navdroid.frshgiph.model
 
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.orm.SugarRecord
-import com.orm.dsl.Unique
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GiphyResponse(
@@ -12,30 +12,37 @@ data class GiphyResponse(
         @JsonProperty("meta") var meta: Meta?
 )
 
+@Entity(tableName = "gif_table")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Data() : SugarRecord() {
+class Data() {
 
-    var uid: String? = null
+    @JsonProperty("id")
+    @PrimaryKey
+    lateinit var uid: String
 
     var imageUrl: String? = null
+
+    var isFavorite: Boolean = false
 
     @JsonProperty("images")
     fun parse(images: Images?) {
         imageUrl = images?.original?.url
     }
 
-    @JsonProperty("id")
-    fun parse(id: String?) {
-        this.uid = id
-    }
-
     override fun equals(other: Any?): Boolean {
         return when {
             this === other -> true
             other?.javaClass != javaClass -> false
-            (other is Data) && id == other.id -> true
+            (other is Data) && uid == other.uid -> true
             else -> false
         }
+    }
+
+    override fun hashCode(): Int {
+        var result = uid.hashCode()
+        result = 31 * result + (imageUrl?.hashCode() ?: 0)
+        result = 31 * result + isFavorite.hashCode()
+        return result
     }
 }
 

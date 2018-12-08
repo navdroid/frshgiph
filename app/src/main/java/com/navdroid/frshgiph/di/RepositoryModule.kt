@@ -1,5 +1,6 @@
 package com.navdroid.frshgiph.di
 
+import com.navdroid.frshgiph.db.GifDb
 import com.navdroid.frshgiph.network.ApiEndPoints
 import com.navdroid.frshgiph.repos.GiphyRepo
 import dagger.Module
@@ -9,6 +10,6 @@ import dagger.Provides
 class RepositoryModule {
 
     @Provides
-    fun getNewsRepo(api: ApiEndPoints) = GiphyRepo(api)
+    fun getApiRepo(api: ApiEndPoints,db:GifDb) = GiphyRepo(api,db)
 
 }

@@ -1,6 +1,10 @@
 package com.navdroid.frshgiph.di
 
+import android.app.Application
+import android.content.Context
 import com.navdroid.frshgiph.BuildConfig
+import com.navdroid.frshgiph.MainApplication
+import com.navdroid.frshgiph.db.GifDb
 import com.navdroid.frshgiph.network.ApiEndPoints
 import dagger.Module
 import dagger.Provides
@@ -12,7 +16,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit
 
 @Module
-class NetworkModule{
+class NetworkModule {
     val CONNECT_TIMEOUT_IN_MS = 30000
 
     @Provides
@@ -36,5 +40,16 @@ class NetworkModule{
                 .addInterceptor(loggingInterceptor)
                 .build()
     }
+
+    @Provides
+    fun provideContext(application: MainApplication): Context {
+        return application
+    }
+
+    @Provides
+    fun provideDB(application: MainApplication): GifDb {
+        return GifDb.getInstance(application)!!
+    }
+
 
 }

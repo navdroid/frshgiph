@@ -18,6 +18,11 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_KEY", "\"${getProperty("local.properties", "api_key")}\""
         buildConfigField "String", "BASE_URL", "\"https://api.giphy.com/\""
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+            }
+        }
     }
     buildTypes {
         release {
@@ -52,6 +57,7 @@ ext {
     arch = "1.1.1"
     dagger_version = "2.14.1"
     retrofit="2.4.0"
+    roomVersion="1.1.1"
 }
 
 dependencies {
@@ -71,7 +77,10 @@ dependencies {
     implementation "android.arch.lifecycle:runtime:1.1.1"
     implementation "android.arch.lifecycle:extensions:${arch}"
     kapt "android.arch.lifecycle:compiler:${arch}"
-    implementation "com.github.satyan:sugar:1.5"
+//    implementation "com.github.satyan:sugar:1.5"
+    implementation "android.arch.persistence.room:runtime:${roomVersion}"
+    kapt "android.arch.persistence.room:compiler:${roomVersion}"
+    implementation "android.arch.persistence.room:rxjava2:${roomVersion}"
     implementation "com.google.dagger:dagger:${dagger_version}"
     kapt "com.google.dagger:dagger-compiler:${dagger_version}"
     kapt "com.google.dagger:dagger-android-processor:${dagger_version}"

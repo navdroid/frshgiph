@@ -25,7 +25,6 @@ import javax.inject.Inject
 
 class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
 
-
     lateinit var viewModel: MainViewModel
     private var isNext: Boolean = false
     private var isloading: Boolean = false
@@ -49,12 +48,10 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
         viewModel.getGifs()
         isloading = true
         viewModel.mGifs.observe(this, Observer {
-            Log.d("TAG", it.toString())
             isloading = false
             mAdapter.addAll(it!!, !isNext)
         })
     }
-
 
     private fun initList() {
         mLayoutManager = GridLayoutManager(activity, 1)
