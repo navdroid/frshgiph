@@ -14,7 +14,7 @@ data class GiphyResponse(
 
 @Entity(tableName = "gif_table")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Data() {
+class Data {
 
     @JsonProperty("id")
     @PrimaryKey

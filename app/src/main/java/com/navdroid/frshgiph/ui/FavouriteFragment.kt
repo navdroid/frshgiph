@@ -63,7 +63,6 @@ class FavouriteFragment : Fragment(), GifAdapter.ItemClickListener {
         viewModel.updateFavGif(gif)
     }
 
-    override fun itemClicked(gif: Data) {
-        viewModel.updateFavGif(gif)
+    override fun itemClicked(gif: Data, view: View) {
     }
 }

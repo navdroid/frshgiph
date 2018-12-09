@@ -11,10 +11,10 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) {
+open class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) : Repository {
     private var mDisposables = CompositeDisposable()
 
-    fun searchGif(query: String = "", offset: Int): Observable<GiphyResponse> {
+    override fun searchGif(query: String, offset: Int): Observable<GiphyResponse> {
 
         val remoteObservable = (if (query.isEmpty())
             api.trending(offset = if (offset == 0) null else offset)
@@ -44,7 +44,7 @@ class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) {
                 })
     }
 
-    fun update(gif: Data) {
+    override fun update(gif: Data) {
         mDisposables.add(Observable.fromCallable {
             if (gif.isFavorite)
                 db.gifDao().insert(gif)
@@ -58,7 +58,7 @@ class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) {
                 })
     }
 
-    fun getFavorite(): Observable<List<Data>> {
+    override fun getFavorite(): Observable<List<Data>> {
         return db.gifDao().getAllFavorite().toObservable()
     }
 
@@ -77,7 +77,7 @@ class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) {
                 })
     }
 
-    fun clear() {
+    override fun clear() {
         mDisposables.clear()
     }
 

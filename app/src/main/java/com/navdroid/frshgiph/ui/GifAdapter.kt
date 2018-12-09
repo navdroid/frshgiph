@@ -12,6 +12,7 @@ import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
@@ -20,6 +21,12 @@ import com.navdroid.frshgiph.R
 import com.navdroid.frshgiph.databinding.ItemGifLayoutBinding
 import com.navdroid.frshgiph.model.Data
 import java.util.ArrayList
+import android.animation.ObjectAnimator
+import android.view.View.VISIBLE
+import android.view.animation.BounceInterpolator
+import android.widget.ImageView
+import com.bumptech.glide.GenericTransitionOptions
+import com.bumptech.glide.request.transition.ViewPropertyTransition
 
 
 class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<GifAdapter.ViewHolder>() {
@@ -36,7 +43,7 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
         holder.itemView.setOnClickListener(holder)
         holder.gif = mGifs[position]
         holder.itemBinding.imageButtonFav.setImageResource(if (holder.gif.isFavorite) R.drawable.ic_fav else R.drawable.ic_fav_empty)
-
+        holder.itemBinding.imageButtonFav.visibility = GONE
         val options = RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .centerCrop()
@@ -51,10 +58,13 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
 
                     override fun onResourceReady(resource: GifDrawable?, model: Any?, target: Target<GifDrawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                         holder.itemBinding.progressBar.visibility = GONE
+                        holder.itemBinding.imageButtonFav.visibility = VISIBLE
+
                         return false;
                     }
 
                 })
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .apply(options)
                 .load(holder.gif.imageUrl)
                 .into(holder.itemBinding.imageViewGif)
@@ -62,6 +72,10 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
         holder.itemBinding.imageButtonFav.setOnClickListener {
             holder.itemBinding.imageButtonFav.setImageResource(if (holder.gif.isFavorite) R.drawable.ic_fav_empty else R.drawable.ic_fav)
             holder.gif.let { itemClickListener.favoriteButtonClicked(it) }
+        }
+
+        holder.itemBinding.root.setOnClickListener { v ->
+            holder.gif.let { itemClickListener.itemClicked(it, v) }
         }
 
     }
@@ -94,7 +108,7 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
 
     interface ItemClickListener {
         fun favoriteButtonClicked(gif: Data)
-        fun itemClicked(gif: Data)
+        fun itemClicked(gif: Data, imageView: View)
     }
 }
 

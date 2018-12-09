@@ -7,6 +7,7 @@ import com.navdroid.frshgiph.model.Data
 import com.navdroid.frshgiph.model.GiphyResponse
 import com.navdroid.frshgiph.network.NetworkObserver
 import com.navdroid.frshgiph.repos.GiphyRepo
+import com.navdroid.frshgiph.repos.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 const val OFFSET = 10
 
-class MainViewModel @Inject constructor(var giphyRepo: GiphyRepo) : ViewModel() {
+class MainViewModel @Inject constructor(var giphyRepo: Repository) : ViewModel() {
 
     private var mQuery: String = ""
     private var mOffset: Int = 0
