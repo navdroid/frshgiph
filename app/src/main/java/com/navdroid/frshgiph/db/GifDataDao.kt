@@ -8,7 +8,7 @@ import io.reactivex.Single
 @Dao
 interface GifDataDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(data: Data)
 
     @Delete()

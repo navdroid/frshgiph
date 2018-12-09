@@ -23,12 +23,8 @@ import java.util.ArrayList
 
 
 class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<GifAdapter.ViewHolder>() {
-    private var mGifs: MutableList<Data> = arrayListOf()
+    private var mGifs = ArrayList<Data>()
     private var mContext: Context? = null
-
-    init {
-        this.mGifs = ArrayList<Data>()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         mContext = parent.context
@@ -73,13 +69,13 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
     fun addAll(gifs: MutableList<Data>, isClear: Boolean = false) {
         var size = 0
         size = this.mGifs.size
-        if (isClear) mGifs.clear()
         this.mGifs.addAll(gifs)
+        notifyDataSetChanged()
+    }
 
-        if (isClear)
-            notifyDataSetChanged()
-        else
-            notifyItemRangeInserted(size, this.mGifs.size)
+    fun clear() {
+        mGifs.clear()
+        notifyDataSetChanged()
 
     }
 
@@ -93,7 +89,7 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
 
     override fun getItemCount(): Int {
 
-        return mGifs!!.size
+        return mGifs.size
     }
 
     interface ItemClickListener {

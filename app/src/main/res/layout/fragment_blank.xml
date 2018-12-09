@@ -9,8 +9,10 @@
         android:id="@+id/editTextSearch"
         android:layout_width="match_parent"
         android:layout_height="64dp"
+        android:drawableEnd="@drawable/ic_icon_search"
+        android:hint="@string/search_cool_gifs_or_not"
         android:padding="16dp"
-        android:drawableEnd="@drawable/ic_icon_search" />
+        app:fontFamily="@font/alef" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewGif"
@@ -18,6 +20,27 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextSearch" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/textViewEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="@string/out_of_gifs_n_please_use_a_new_keywords"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:fontFamily="@font/alef"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

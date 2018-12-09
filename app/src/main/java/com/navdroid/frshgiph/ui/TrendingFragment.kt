@@ -26,7 +26,7 @@ import javax.inject.Inject
 class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
 
     lateinit var viewModel: MainViewModel
-    private var isNext: Boolean = false
+    private var isLoadMore: Boolean = false
     private var isloading: Boolean = false
     private lateinit var mAdapter: GifAdapter
     private lateinit var mLayoutManager: GridLayoutManager
@@ -47,9 +47,28 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
         viewModel = ViewModelProviders.of((activity as MainActivity), (activity as MainActivity).viewModelFactory).get(MainViewModel::class.java)
         viewModel.getGifs()
         isloading = true
+        progressBar.isIndeterminate = true
+        progressBar.visibility = View.VISIBLE
+
         viewModel.mGifs.observe(this, Observer {
+
+            if (it == null || it.isEmpty())
+                textViewEmpty.visibility = View.VISIBLE
+            else
+                textViewEmpty.visibility = View.GONE
+
             isloading = false
-            mAdapter.addAll(it!!, !isNext)
+            progressBar.visibility = View.GONE
+//            if (isLoadMore)
+            mAdapter.clear()
+            mAdapter.addAll(it!!, isLoadMore)
+        })
+
+        viewModel.error.observe(this, Observer {
+            if (it != null) {
+                progressBar.visibility = View.GONE
+                Log.e("TAG", it)
+            }
         })
     }
 
@@ -63,9 +82,9 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
                 super.onScrollStateChanged(recyclerView, newState)
 
                 if (!recyclerView.canScrollVertically(1) && !isloading) {
-                    isNext = true
+                    isLoadMore = true
                     isloading = true
-                    viewModel.getGifs(editTextSearch.text.toString(), isNext)
+                    viewModel.getGifs(editTextSearch.text.toString(), isLoadMore)
                 }
             }
         })
@@ -75,8 +94,11 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
             }
 
             override fun onTextChanged(charSequence: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                isNext = false
+                textViewEmpty.visibility = View.GONE
+                isLoadMore = false
                 isloading = true
+                mAdapter.clear()
+                progressBar.visibility = View.VISIBLE
                 viewModel.getGifs(charSequence.toString())
             }
 

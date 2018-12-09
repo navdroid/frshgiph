@@ -19,11 +19,9 @@ class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) {
             api.trending(offset = offset)
         else
             api.search(query = query, offset = offset))
-                .doOnNext {
-                    if (it.data.isNotEmpty())
-                        insert(it.data)
-                }
-        val favoriteObservable = getFavorite()
+
+
+        val favoriteObservable = db.gifDao().getAllFavorite().toObservable()
 
         return Observable.zip(remoteObservable, favoriteObservable, BiFunction { remote: GiphyResponse, local: List<Data> ->
             remote.data.forEach {
@@ -37,6 +35,20 @@ class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) {
     private fun insert(list: ArrayList<Data>) {
         mDisposables.add(Observable.fromCallable {
             db.gifDao().insert(list)
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe {
+
+                })
+    }
+
+    fun update(gif: Data) {
+        mDisposables.add(Observable.fromCallable {
+            if (gif.isFavorite)
+                db.gifDao().insert(gif)
+            else
+                db.gifDao().delete(gif)
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
