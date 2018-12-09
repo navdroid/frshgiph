@@ -15,10 +15,11 @@ class GiphyRepo @Inject constructor(val api: ApiEndPoints, val db: GifDb) {
     private var mDisposables = CompositeDisposable()
 
     fun searchGif(query: String = "", offset: Int): Observable<GiphyResponse> {
+
         val remoteObservable = (if (query.isEmpty())
-            api.trending(offset = offset)
+            api.trending(offset = if (offset == 0) null else offset)
         else
-            api.search(query = query, offset = offset))
+            api.search(query = query, offset = if (offset == 0) null else offset))
 
 
         val favoriteObservable = db.gifDao().getAllFavorite().toObservable()

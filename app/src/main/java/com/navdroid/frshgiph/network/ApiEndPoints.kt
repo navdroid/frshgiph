@@ -12,8 +12,8 @@ import retrofit2.http.Query
 interface ApiEndPoints {
 
     @GET("/v1/gifs/search?api_key=${BuildConfig.API_KEY}&limit=10")
-    fun search(@Query("q") query: String, @Query("offset") offset: Int): Observable<GiphyResponse>
+    fun search(@Query("q") query: String, @Query("offset") offset: Int?=null): Observable<GiphyResponse>
 
     @GET("/v1/gifs/trending?api_key=${BuildConfig.API_KEY}&limit=10")
-    fun trending(@Query("offset") offset: Int): Observable<GiphyResponse>
+    fun trending(@Query("offset") offset: Int?=null): Observable<GiphyResponse>
 }
