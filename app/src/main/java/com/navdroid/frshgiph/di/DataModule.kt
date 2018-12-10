@@ -16,7 +16,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit
 
 @Module
-class NetworkModule {
+class DataModule {
     val CONNECT_TIMEOUT_IN_MS = 30000
 
     @Provides
