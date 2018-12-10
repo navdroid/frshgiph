@@ -48,7 +48,7 @@ class Data {
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Images(
-        @JsonProperty("fixed_height_small") var original: Original?
+        @JsonProperty("fixed_width_small") var original: Original?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

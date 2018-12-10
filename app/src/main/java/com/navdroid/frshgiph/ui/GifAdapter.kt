@@ -157,5 +157,7 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
     }
 
 
+
+
 }
 

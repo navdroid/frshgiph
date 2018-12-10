@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.fragment_blank.*
 import javax.inject.Inject
 import android.support.v4.view.ViewCompat
 import android.view.MotionEvent
+import com.navdroid.frshgiph.Utils
 
 
 class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
@@ -54,8 +55,13 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
 
         viewModel.mGifs.observe(this, Observer {
 
-            if (it == null || it.isEmpty())
+            if (it == null || it.isEmpty()) {
                 textViewEmpty.visibility = View.VISIBLE
+                if (!Utils.isNetworkAvailable(activity!!))
+                    textViewEmpty.text=getString(R.string.internet_check)
+                else
+                    textViewEmpty.text=getString(R.string.out_of_gifs_n_please_use_a_new_keywords)
+            }
             else
                 textViewEmpty.visibility = View.GONE
 
@@ -70,6 +76,11 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
             if (it != null) {
                 progressBar.visibility = View.GONE
                 Log.e("TAG", it)
+
+                Utils.showSnackBar(activity!!,
+                        if (!Utils.isNetworkAvailable(activity!!)) getString(R.string.internet_check)
+                        else getString(R.string.common_error_msg))
+
             }
         })
     }

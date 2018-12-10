@@ -3,6 +3,7 @@ package com.navdroid.frshgiph.viewmodel
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
+import com.navdroid.frshgiph.Utils
 import com.navdroid.frshgiph.model.Data
 import com.navdroid.frshgiph.model.GiphyResponse
 import com.navdroid.frshgiph.network.NetworkObserver
@@ -44,6 +45,7 @@ class MainViewModel @Inject constructor(var giphyRepo: Repository) : ViewModel()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
+
                         if (it.meta?.status == 200) {
                             error.value = null
                             if (it.pagination?.offset != null && it.pagination?.offset!! > 0)
@@ -57,6 +59,7 @@ class MainViewModel @Inject constructor(var giphyRepo: Repository) : ViewModel()
                             error.value = it.meta?.msg
                     }, {
                         error.value = it.message
+                        mGifs.postValue(arrayListOf())
                     })
             )
         }
