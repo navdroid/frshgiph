@@ -13,6 +13,7 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.support.v4.content.ContextCompat.getSystemService
 import android.net.ConnectivityManager
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -54,5 +55,12 @@ object Utils {
                 .apply(options)
                 .load(url)
                 .into(imageView)
+    }
+
+    fun hideKeyboard(view:View) {
+        if (view != null) {
+            val imm = (view.context).getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+            imm?.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }

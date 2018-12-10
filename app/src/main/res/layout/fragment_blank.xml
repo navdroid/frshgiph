@@ -12,6 +12,9 @@
         android:drawableEnd="@drawable/ic_icon_search"
         android:hint="@string/search_cool_gifs_or_not"
         android:padding="16dp"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionSearch"
         app:fontFamily="@font/alef" />
 
     <android.support.v7.widget.RecyclerView

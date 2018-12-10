@@ -98,6 +98,7 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:${dagger_version}"
     implementation "com.google.dagger:dagger-android:${dagger_version}"
     implementation "com.google.dagger:dagger-android-support:${dagger_version}"
+    implementation 'hari.bounceview:bounceview:0.1.0'
     testImplementation tests.jUnit
     testImplementation tests.mockito
     testImplementation tests.archore

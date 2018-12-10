@@ -33,6 +33,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.navdroid.frshgiph.Utils
+import hari.bounceview.BounceView
 
 
 class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<GifAdapter.ViewHolder>() {
@@ -70,6 +71,8 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
             previewImage(holder.gif)
         }
 
+        BounceView.addAnimTo(holder.itemBinding.imageButtonFav)
+                .setScaleForPopOutAnim(1.4f, 1.4f)
     }
 
     fun addAll(gifs: MutableList<Data>, isClear: Boolean = false) {

@@ -23,6 +23,8 @@ import kotlinx.android.synthetic.main.fragment_blank.*
 import javax.inject.Inject
 import android.support.v4.view.ViewCompat
 import android.view.MotionEvent
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import com.navdroid.frshgiph.Utils
 
 
@@ -119,6 +121,16 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
             }
 
         })
+
+        editTextSearch
+                .setOnEditorActionListener(TextView.OnEditorActionListener { view, actionId, p2 ->
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        Utils.hideKeyboard(view)
+
+                        return@OnEditorActionListener true
+                    }
+                    false
+                })
     }
 
     override fun favoriteButtonClicked(gif: Data) {
