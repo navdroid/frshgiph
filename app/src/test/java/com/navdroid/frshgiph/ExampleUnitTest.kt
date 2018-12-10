@@ -40,7 +40,7 @@ class ExampleUnitTest {
 
     @Before
     fun setUp() {
-        whenever(giphyRepo.searchGif("ab", 0)).thenReturn(data)
+        whenever(giphyRepo.searchGif("xyz", 0)).thenReturn(data)
         viewModel = MainViewModel(giphyRepo)
         viewModel.mGifs.observeForever(apiResponseObserver)
     }
@@ -52,10 +52,10 @@ class ExampleUnitTest {
 
     @Test
     fun testIfNotEmpty() {
-        whenever(giphyRepo.searchGif("ab", 0)).thenReturn(data)
+        whenever(giphyRepo.searchGif("xyz", 0)).thenReturn(data)
         var mData = Data()
-        mData.uid = "dad"
-        mData.imageUrl = "dad"
+        mData.uid = "xyz"
+        mData.imageUrl = "xyz"
         mData.isFavorite = false
         viewModel.mGifs.value = arrayListOf(mData)
         verify(apiResponseObserver).onChanged(arrayListOf(mData))

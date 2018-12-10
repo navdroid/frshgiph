@@ -16,13 +16,8 @@ import android.view.ViewGroup
 import com.navdroid.frshgiph.R
 import com.navdroid.frshgiph.model.*
 import com.navdroid.frshgiph.viewmodel.MainViewModel
-import com.navdroid.frshgiph.viewmodel.MainViewModelFactory
-import dagger.android.AndroidInjection
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_blank.*
-import javax.inject.Inject
-import android.support.v4.view.ViewCompat
-import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.navdroid.frshgiph.Utils
@@ -60,18 +55,16 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
             if (it == null || it.isEmpty()) {
                 textViewEmpty.visibility = View.VISIBLE
                 if (!Utils.isNetworkAvailable(activity!!))
-                    textViewEmpty.text=getString(R.string.internet_check)
+                    textViewEmpty.text = getString(R.string.internet_check)
                 else
-                    textViewEmpty.text=getString(R.string.out_of_gifs_n_please_use_a_new_keywords)
-            }
-            else
+                    textViewEmpty.text = getString(R.string.out_of_gifs_n_please_use_a_new_keywords)
+            } else
                 textViewEmpty.visibility = View.GONE
 
             isloading = false
             progressBar.visibility = View.GONE
-//            if (isLoadMore)
             mAdapter.clear()
-            mAdapter.addAll(it!!, isLoadMore)
+            mAdapter.addAll(it!!)
         })
 
         viewModel.error.observe(this, Observer {
@@ -96,7 +89,7 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (!recyclerView.canScrollVertically(1) && !isloading) {
+                if (!recyclerView.canScrollVertically(1) && !isloading && Utils.isNetworkAvailable(activity!!)) {
                     isLoadMore = true
                     isloading = true
                     viewModel.getGifs(editTextSearch.text.toString(), isLoadMore)
@@ -122,11 +115,9 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
 
         })
 
-        editTextSearch
-                .setOnEditorActionListener(TextView.OnEditorActionListener { view, actionId, p2 ->
+        editTextSearch.setOnEditorActionListener(TextView.OnEditorActionListener { view, actionId, p2 ->
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                         Utils.hideKeyboard(view)
-
                         return@OnEditorActionListener true
                     }
                     false

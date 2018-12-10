@@ -20,7 +20,6 @@ import kotlinx.android.synthetic.main.fragment_favourite.*
 
 class FavouriteFragment : Fragment(), GifAdapter.ItemClickListener {
 
-
     lateinit var viewModel: MainViewModel
     private var isloading: Boolean = false
     private lateinit var mAdapter: GifAdapter
@@ -50,7 +49,7 @@ class FavouriteFragment : Fragment(), GifAdapter.ItemClickListener {
 
             isloading = false
             mAdapter.clear()
-            mAdapter.addAll(it!!, true)
+            mAdapter.addAll(it!!)
         })
     }
 
