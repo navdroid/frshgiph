@@ -21,12 +21,17 @@ import com.navdroid.frshgiph.R
 import com.navdroid.frshgiph.databinding.ItemGifLayoutBinding
 import com.navdroid.frshgiph.model.Data
 import java.util.ArrayList
-import android.animation.ObjectAnimator
 import android.view.View.VISIBLE
-import android.view.animation.BounceInterpolator
+import android.graphics.drawable.ColorDrawable
+import android.view.Window.FEATURE_NO_TITLE
+import android.R.attr.priority
+import android.app.Dialog
+import android.databinding.adapters.TextViewBindingAdapter.setText
+import android.graphics.Color
+import android.view.Window
 import android.widget.ImageView
-import com.bumptech.glide.GenericTransitionOptions
-import com.bumptech.glide.request.transition.ViewPropertyTransition
+import android.widget.ProgressBar
+import android.widget.TextView
 
 
 class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<GifAdapter.ViewHolder>() {
@@ -74,8 +79,8 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
             holder.gif.let { itemClickListener.favoriteButtonClicked(it) }
         }
 
-        holder.itemBinding.root.setOnClickListener { v ->
-            holder.gif.let { itemClickListener.itemClicked(it, v) }
+        holder.itemBinding.root.setOnClickListener {
+            previewImage(holder.gif)
         }
 
     }
@@ -108,7 +113,49 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
 
     interface ItemClickListener {
         fun favoriteButtonClicked(gif: Data)
-        fun itemClicked(gif: Data, imageView: View)
     }
+
+    var builder: Dialog? = null
+    fun previewImage(gif: Data) {
+        val view = LayoutInflater.from(mContext).inflate(R.layout.quick_view, null)
+
+        val imageView = view.findViewById<ImageView>(R.id.imageViewGifPreview)
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
+
+        progressBar.visibility = View.VISIBLE
+        val options = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+
+                .priority(Priority.HIGH)
+        Glide.with(mContext!!)
+                .asGif()
+                .listener(object : RequestListener<GifDrawable> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<GifDrawable>?, isFirstResource: Boolean): Boolean {
+                        return false;
+                    }
+
+                    override fun onResourceReady(resource: GifDrawable?, model: Any?, target: Target<GifDrawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        progressBar.visibility = View.GONE
+                        return false;
+                    }
+
+                })
+                .apply(options)
+                .load(gif.imageUrl)
+                .into(imageView)
+        view.setOnClickListener {
+            builder?.dismiss()
+        }
+
+        builder = Dialog(mContext,R.style.mydialog)
+        builder?.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        builder?.setCanceledOnTouchOutside(true)
+        builder?.window?.setBackgroundDrawable(
+                ColorDrawable(Color.parseColor("#bf000000")))
+        builder?.setContentView(view)
+        builder?.show()
+    }
+
+
 }
 

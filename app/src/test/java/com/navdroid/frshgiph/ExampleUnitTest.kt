@@ -52,6 +52,7 @@ class ExampleUnitTest {
 
     @Test
     fun testIfNotEmpty() {
+        whenever(giphyRepo.searchGif("ab", 0)).thenReturn(data)
         var mData = Data()
         mData.uid = "dad"
         mData.imageUrl = "dad"

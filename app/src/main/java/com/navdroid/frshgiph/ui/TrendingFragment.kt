@@ -22,8 +22,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_blank.*
 import javax.inject.Inject
 import android.support.v4.view.ViewCompat
-
-
+import android.view.MotionEvent
 
 
 class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
@@ -114,12 +113,5 @@ class TrendingFragment : Fragment(), GifAdapter.ItemClickListener {
     override fun favoriteButtonClicked(gif: Data) {
         viewModel.updateFavGif(gif)
     }
-
-
-    override fun itemClicked(gif: Data,view:View) {
-
-
-    }
-
 
 }
