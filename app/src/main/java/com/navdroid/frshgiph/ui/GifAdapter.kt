@@ -32,6 +32,7 @@ import android.view.Window
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.navdroid.frshgiph.Utils
 
 
 class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<GifAdapter.ViewHolder>() {
@@ -50,30 +51,16 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
         holder.itemBinding.imageButtonFav.setImageResource(if (holder.gif.isFavorite) R.drawable.ic_fav else R.drawable.ic_fav_empty)
         holder.itemBinding.imageButtonFav.visibility = GONE
         val options = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .centerCrop()
                 .priority(Priority.HIGH)
         holder.itemBinding.progressBar.visibility = View.VISIBLE
-        Glide.with(mContext!!)
-                .asGif()
-                .listener(object : RequestListener<GifDrawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<GifDrawable>?, isFirstResource: Boolean): Boolean {
-                        return false;
-                    }
-
-                    override fun onResourceReady(resource: GifDrawable?, model: Any?, target: Target<GifDrawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        holder.itemBinding.progressBar.visibility = GONE
-                        holder.itemBinding.imageButtonFav.visibility = VISIBLE
-
-                        return false;
-                    }
-
-                })
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(options)
-                .load(holder.gif.imageUrl)
-                .into(holder.itemBinding.imageViewGif)
-
+        Utils.loadGif(mContext!!, options, holder.gif.imageUrl!!, holder.itemBinding.imageViewGif) {
+            if (it) {
+                holder.itemBinding.progressBar.visibility = GONE
+                holder.itemBinding.imageButtonFav.visibility = VISIBLE
+            }
+        }
         holder.itemBinding.imageButtonFav.setOnClickListener {
             holder.itemBinding.imageButtonFav.setImageResource(if (holder.gif.isFavorite) R.drawable.ic_fav_empty else R.drawable.ic_fav)
             holder.gif.let { itemClickListener.favoriteButtonClicked(it) }
@@ -124,30 +111,19 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
 
         progressBar.visibility = View.VISIBLE
         val options = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
 
                 .priority(Priority.HIGH)
-        Glide.with(mContext!!)
-                .asGif()
-                .listener(object : RequestListener<GifDrawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<GifDrawable>?, isFirstResource: Boolean): Boolean {
-                        return false;
-                    }
+        Utils.loadGif(mContext!!, options, gif.imageUrl!!, imageView) {
+            if (it)
+                progressBar.visibility = View.GONE
+        }
 
-                    override fun onResourceReady(resource: GifDrawable?, model: Any?, target: Target<GifDrawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        progressBar.visibility = View.GONE
-                        return false;
-                    }
-
-                })
-                .apply(options)
-                .load(gif.imageUrl)
-                .into(imageView)
         view.setOnClickListener {
             builder?.dismiss()
         }
 
-        builder = Dialog(mContext,R.style.mydialog)
+        builder = Dialog(mContext, R.style.mydialog)
         builder?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         builder?.setCanceledOnTouchOutside(true)
         builder?.window?.setBackgroundDrawable(
@@ -155,8 +131,6 @@ class GifAdapter(private val itemClickListener: ItemClickListener) : RecyclerVie
         builder?.setContentView(view)
         builder?.show()
     }
-
-
 
 
 }

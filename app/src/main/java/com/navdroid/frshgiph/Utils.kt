@@ -12,6 +12,15 @@ import java.net.UnknownHostException
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.support.v4.content.ContextCompat.getSystemService
 import android.net.ConnectivityManager
+import android.view.View
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.gif.GifDrawable
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 
 
 object Utils {
@@ -25,5 +34,25 @@ object Utils {
         val snackbar = Snackbar.make(activity.findViewById<ViewGroup>(android.R.id.content), msg, Snackbar.LENGTH_LONG)
         snackbar.setActionTextColor(Color.WHITE)
         snackbar.show()
+    }
+
+    fun loadGif(mContext: Context, options: RequestOptions, url: String, imageView: ImageView, passedMethod: ((isSuccess: Boolean) -> Unit)) {
+
+        Glide.with(mContext)
+                .asGif()
+                .listener(object : RequestListener<GifDrawable> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<GifDrawable>?, isFirstResource: Boolean): Boolean {
+                        passedMethod(false)
+                        return false;
+                    }
+
+                    override fun onResourceReady(resource: GifDrawable?, model: Any?, target: Target<GifDrawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        passedMethod(true)
+                        return false;
+                    }
+                })
+                .apply(options)
+                .load(url)
+                .into(imageView)
     }
 }
